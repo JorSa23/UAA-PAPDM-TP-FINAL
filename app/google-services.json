@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "940965428762",
+    "project_id": "proyectoapptareas",
+    "storage_bucket": "proyectoapptareas.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940965428762:android:8b391022f3beb961d11ba3",
+        "android_client_info": {
+          "package_name": "com.example.apptareas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPh5N060gC6hBDHGv7FuvrGqzBZZqb3XU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
