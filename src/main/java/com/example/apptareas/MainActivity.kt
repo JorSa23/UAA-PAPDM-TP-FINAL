@@ -1,5 +1,6 @@
 package com.example.apptareas
 
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.apptareas.detail.Examenes.ExamenViewModel
+import com.example.apptareas.detail.TareasFacultad.TareasFacultadViewModel // Importar el nuevo ViewModel
 import com.example.apptareas.home.HomeViewMode
 import com.example.apptareas.login.LoginViewModel
 import com.example.apptareas.navigation.Navigation
@@ -20,20 +22,29 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val loginViewModel = viewModel(modelClass = LoginViewModel :: class.java )
-            val homeViewMode = viewModel(modelClass = HomeViewMode :: class.java )
-            val examenViewModel = viewModel(modelClass = ExamenViewModel :: class.java )
-            AppTareasTheme {
+            // ViewModels existentes
+            val loginViewModel = viewModel(modelClass = LoginViewModel::class.java)
+            val homeViewMode = viewModel(modelClass = HomeViewMode::class.java)
+            val examenViewModel = viewModel(modelClass = ExamenViewModel::class.java)
 
-                Surface(modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background){
+            // Nuevo ViewModel para TareasFacultad
+            val tareaFacultadViewModel = viewModel(modelClass = TareasFacultadViewModel::class.java)
+
+            AppTareasTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
                     Navigation(
                         loginViewModel = loginViewModel,
                         examenViewModel = examenViewModel,
-                        homeViewMode = homeViewMode)
+                        tareaFacultadViewModel = tareaFacultadViewModel, // Pasar el nuevo ViewModel
+                        homeViewMode = homeViewMode
+                    )
                 }
             }
         }
     }
 }
+
 

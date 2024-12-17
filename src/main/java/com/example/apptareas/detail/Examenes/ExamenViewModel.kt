@@ -13,7 +13,7 @@ class ExamenViewModel(
     private val repository: StorageRepository = StorageRepository()
 ):ViewModel() {
     var detailUiState by mutableStateOf(DetailUiState())
-    private set
+        private set
 
     private val hasUser:Boolean
         get() = repository.hasUser()
@@ -77,7 +77,7 @@ class ExamenViewModel(
         repository.getExamen(
             examenId = examenId,
             onError = {},
-            ){
+        ){
             detailUiState = detailUiState.copy(selectedExamen = it)
             detailUiState.selectedExamen?.let { it1 -> setEditFields(it1) }
         }
@@ -127,4 +127,4 @@ data class DetailUiState(
     val updateExamenStatus:Boolean = false,
     val selectedExamen: Examenes? = null
 
-    )
+)
