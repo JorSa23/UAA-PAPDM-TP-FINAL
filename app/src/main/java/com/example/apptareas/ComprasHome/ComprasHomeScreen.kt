@@ -1,12 +1,10 @@
-package com.example.apptareas.home
+package com.example.apptareas.ComprasHome
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
@@ -26,9 +24,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.apptareas.ComprasHome.ComprasHomeViewModel
 import com.example.apptareas.R
-import com.example.apptareas.Utils
-import com.example.apptareas.login.LoginViewModel
+import com.example.apptareas.detail.Compras.DetailUiState
+import com.example.apptareas.home.HomeUiState
+import com.example.apptareas.home.HomeViewMode
+import com.example.apptareas.models.Compras
 import com.example.apptareas.models.Examenes
 import com.example.apptareas.repository.Resources
 import com.example.apptareas.ui.theme.AppTareasTheme
@@ -42,24 +43,26 @@ import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun Home(
-    homeViewMode: HomeViewMode?,
-    onExamenClick: (id: String) -> Unit,
-    navToExamenPage: () -> Unit,
+
+fun ComprasHomeScreen(
+    comprashomeViewModel: ComprasHomeViewModel?,
+    onComprasClick: (id: String) -> Unit,
+    navToComprasHomePage: () -> Unit,
     navToComprasPage: () -> Unit,
+    navToExamenPage: () -> Unit,
     navToLoginPage: () -> Unit
 ) {
-    val homeUiState = homeViewMode?.homeUiState ?: HomeUiState()
+    val comprasUiState = comprashomeViewModel?.comprasUiState ?: ComprasUiState()
 
     var openDialog by remember { mutableStateOf(false) }
-    var selectedExamen: Examenes? by remember { mutableStateOf(null) }
+    var selectedCompras: Compras? by remember { mutableStateOf(null) }
 
     val scrollState = rememberScrollState()
 
     var isMenuExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        homeViewMode?.loadExamenes()
+        comprashomeViewModel?.loadCompras()
     }
 
     Scaffold(
@@ -106,7 +109,7 @@ fun Home(
                         }
 
                         FloatingActionButton(
-                            onClick = { navToComprasPage()},
+                            onClick = { navToComprasPage() },
                             containerColor = ccompras,
                             modifier = Modifier.padding(bottom = 8.dp)
                         ) {
@@ -153,12 +156,12 @@ fun Home(
                 }
             }
         }
-,
+        ,
         topBar = {
             TopAppBar(
                 actions = {
                     IconButton(onClick = {
-                        homeViewMode?.signOut()
+                        comprashomeViewModel?.signOut()
                         navToLoginPage()
                     }) {
                         Icon(
@@ -172,7 +175,17 @@ fun Home(
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            when (val examenesList = homeUiState.examenesList) {
+            Button(
+                onClick = { navToComprasPage() },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Green)
+            ) {
+                Text(text = "Agregar Compra")
+            }
+
+            when (val comprasList = comprasUiState.comprasList) {
                 is Resources.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -182,22 +195,22 @@ fun Home(
                 }
 
                 is Resources.Success -> {
-                    val sortedExamenes = examenesList.data?.sortedBy { examen ->
-                        parseDateString(examen.fecha)
+                    val sortedCompras = comprasList.data?.sortedBy { compras ->
+                        compras.producto // Ordena alfabéticamente por el campo producto
                     } ?: emptyList()
 
                     LazyColumn(
                         contentPadding = PaddingValues(16.dp)
                     ) {
-                        items(sortedExamenes) { examen ->
-                            ExamenItem(
-                                examen = examen,
+                        items(sortedCompras) { compras ->
+                            ComprasItem(
+                                compras = compras,
                                 onLongClick = {
                                     openDialog = true
-                                    selectedExamen = examen
+                                    selectedCompras = compras
                                 },
                             ) {
-                                onExamenClick.invoke(examen.documentId)
+                                onComprasClick.invoke(compras.documentId)
                             }
                         }
                     }
@@ -205,12 +218,12 @@ fun Home(
                     AnimatedVisibility(visible = openDialog) {
                         AlertDialog(
                             onDismissRequest = { openDialog = false },
-                            title = { Text(text = "¿Quieres borrar el examen?") },
+                            title = { Text(text = "¿Quieres borrar el item?") },
                             confirmButton = {
                                 Button(
                                     onClick = {
-                                        selectedExamen?.documentId?.let {
-                                            homeViewMode?.deleteExamen(it)
+                                        selectedCompras?.documentId?.let {
+                                            comprashomeViewModel?.deleteCompras(it)
                                         }
                                         openDialog = false
                                     },
@@ -230,7 +243,7 @@ fun Home(
 
                 else -> {
                     Text(
-                        text = examenesList.throwable?.localizedMessage ?: "Error desconocido",
+                        text = comprasList.throwable?.localizedMessage ?: "Error desconocido",
                         color = Color.Red
                     )
                 }
@@ -238,31 +251,19 @@ fun Home(
         }
     }
 
-    LaunchedEffect(key1 = homeViewMode?.hasUser) {
-        if (homeViewMode?.hasUser == false) {
+    LaunchedEffect(key1 = comprashomeViewModel?.hasUser) {
+        if (comprashomeViewModel?.hasUser == false) {
             navToLoginPage.invoke()
         }
     }
 }
 
-fun parseDateString(dateString: String): Long {
-    return try {
-        // Suponiendo que la fecha está en formato "yyyy-MM-dd"
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val date = format.parse(dateString)
-        date?.time ?: 0L
-    } catch (e: Exception) {
-        0L // Si la fecha no tiene un formato válido, considerarla como la más antigua
-    }
-}
-
-
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExamenItem(
-    examen: Examenes,
+fun ComprasItem(
+    compras: Compras,
     onLongClick: () -> Unit,
     onClick: () -> Unit
 ) {
@@ -275,7 +276,7 @@ fun ExamenItem(
             .padding(8.dp)
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = cexamen // Color fijo para todas las tarjetas.
+            containerColor = ccompras // Color fijo para todas las tarjetas.
         )
     ) {
         Column(
@@ -285,7 +286,7 @@ fun ExamenItem(
         ) {
             // Título centrado
             Text(
-                text = "Examen",
+                text = "Lista de Compras",
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth() // Ocupa
@@ -294,9 +295,9 @@ fun ExamenItem(
             // Espaciador entre el título y el contenido
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Materia
+            // Productos
             Text(
-                text = examen.materia,
+                text = compras.producto,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
@@ -305,9 +306,9 @@ fun ExamenItem(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Descripción
+            // Marca
             Text(
-                text = examen.description,
+                text = compras.marca,
                 style = MaterialTheme.typography.bodyMedium,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 4,
@@ -316,50 +317,31 @@ fun ExamenItem(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Fecha
+            //Cantidad
             Text(
-                text = examen.fecha,
+                text = compras.cantidad,
                 style = MaterialTheme.typography.bodyMedium,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 modifier = Modifier.padding(4.dp)
             )
 
-            // Espacio para empujar la hora hacia abajo
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Hora alineada a la derecha
-            Text(
-                text = examen.hora,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.End, // Alineación del texto a la derecha
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-                modifier = Modifier
-                    .fillMaxWidth() // Ocupa
-                    .padding(4.dp)
-            )
         }
     }
 
 
 }
 
-private fun formatData(timestamp: Timestamp): String {
-    val sdf = SimpleDateFormat("MM-dd-yyyy hh:mm", Locale.getDefault())
-    return sdf.format(timestamp.toDate())
-}
-
 @Preview
 @Composable
 fun PrevHomeScreen() {
     AppTareasTheme {
-        Home(
+        com.example.apptareas.home.Home(
             homeViewMode = null,
             onExamenClick = {},
             navToExamenPage = {},
-            navToLoginPage = {},
-            navToComprasPage = {}
+            navToComprasPage = {},
+            navToLoginPage = {}
         )
     }
 }

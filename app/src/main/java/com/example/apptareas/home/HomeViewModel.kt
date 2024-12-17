@@ -49,14 +49,6 @@ class HomeViewMode(
     fun signOut() = repository.signOut()
 
 
-
-
-
-
-
-
-
-
 }
 
 data class HomeUiState(
