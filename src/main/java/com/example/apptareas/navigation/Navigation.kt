@@ -14,8 +14,8 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.example.apptareas.detail.TareasFacultad.TareasFacultadScreen
 import com.example.apptareas.detail.TareasFacultad.TareasFacultadViewModel
-import com.example.apptareas.home.Home
-import com.example.apptareas.home.HomeViewMode
+import com.example.apptareas.TareasFacultadHome.Home
+import com.example.apptareas.TareasFacultadHome.HomeViewMode
 
 
 enum class LoginRoutes{
