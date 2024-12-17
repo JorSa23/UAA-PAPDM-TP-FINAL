@@ -69,7 +69,7 @@ class HomeViewMode(
         }
     }
 
-    fun deleteTareaFacultad(tareaId: String) = repository.deleteTareasFacultad(tareaId) {
+    fun deleteTareaFacultad(tareaId: String) = repository.deleteTareaFacultad(tareaId) {
         homeUiState = homeUiState.copy(tareaDeletedStatus = it)
     }
 

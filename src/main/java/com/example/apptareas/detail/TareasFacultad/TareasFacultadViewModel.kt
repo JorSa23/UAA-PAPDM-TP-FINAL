@@ -48,7 +48,7 @@ class TareasFacultadViewModel(
 
     fun addTareasFacultad(){
         if (hasUser){
-            repository.addTareasFacultad(
+            repository.addTareaFacultad(
                 userId = user!!.uid,
                 materia = detailUiState.materia,
                 description = detailUiState.description,
@@ -75,8 +75,8 @@ class TareasFacultadViewModel(
     }
 
     fun getTareasFacultad(TareasFacultadId:String){
-        repository.getTareasFacultad(
-            tareasFacultadId = TareasFacultadId,
+        repository.getTareaFacultad(
+            tareaId = TareasFacultadId,
             onError = {},
         ){
             detailUiState = detailUiState.copy(selectedTareasFacultad = it)
@@ -87,10 +87,10 @@ class TareasFacultadViewModel(
     fun updateTareasFacultad(
         TareasFacultadId: String
     ){
-        repository.updateTareasFacultad(
+        repository.updateTareaFacultad(
             materia = detailUiState.materia,
             description = detailUiState.description,
-            tareasFacultadId = TareasFacultadId,
+            tareaId = TareasFacultadId,
             fecha = detailUiState.fecha,
             dia = detailUiState.dia,
             hora = detailUiState.hora,

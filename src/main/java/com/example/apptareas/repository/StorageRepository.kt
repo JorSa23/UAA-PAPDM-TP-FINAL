@@ -111,12 +111,12 @@ class StorageRepository() {
     }
 
     // ======================= MÉTODOS PARA TAREASFACULTAD ==========================
-    /*fun getUserTareasFacultad(userId: String): Flow<Resources<List<TareasFacultad>>> = callbackFlow {
+    fun getUserTareasFacultad(userId: String): Flow<Resources<List<TareasFacultad>>> = callbackFlow {
         var snapshotStateListener: ListenerRegistration? = null
 
         try {
             snapshotStateListener = tareasFacultadRef
-                .orderBy("timestamp")
+                //.orderBy("timestamp")
                 .whereEqualTo("userId", userId)
                 .addSnapshotListener { snapshot, e ->
                     val response = if (snapshot != null) {
@@ -133,49 +133,19 @@ class StorageRepository() {
             e.printStackTrace()
         }
         awaitClose { snapshotStateListener?.remove() }
-    }*/
-    fun getUserTareasFacultad(
-        userId: String
-    ): Flow<Resources<List<TareasFacultad>>> = callbackFlow {
-        var snapshotStateListener: ListenerRegistration? = null
-        try {
-            snapshotStateListener = tareasFacultadRef
-                //.orderBy("timestamp")
-                .whereEqualTo("userId", userId)
-                .addSnapshotListener { snapshot, e ->
-                    if (e != null) {
-                        println("Error al escuchar tareas: ${e.message}") // LOG DE ERROR
-                        trySend(Resources.Error(e)) // Envía error
-                        return@addSnapshotListener
-                    }
-                    if (snapshot != null) {
-                        val tareas = snapshot.toObjects(TareasFacultad::class.java)
-                        println("Tareas cargadas correctamente: $tareas") // LOG DE ÉXITO
-                        trySend(Resources.Success(tareas))
-                    } else {
-                        println("Snapshot nulo") // LOG DE SNAPSHOT NULO
-                        trySend(Resources.Error(Throwable("Snapshot nulo")))
-                    }
-                }
-        } catch (e: Exception) {
-            println("Excepción en getUserTareasFacultad: ${e.message}") // LOG DE EXCEPCIÓN
-            trySend(Resources.Error(e))
-        }
-        awaitClose { snapshotStateListener?.remove() }
     }
 
-
-    fun getTareasFacultad(
-        tareasFacultadId: String,
+    fun getTareaFacultad(
+        tareaId: String,
         onError: (Throwable?) -> Unit,
         onSuccess: (TareasFacultad?) -> Unit
     ) {
-        tareasFacultadRef.document(tareasFacultadId).get()
+        tareasFacultadRef.document(tareaId).get()
             .addOnSuccessListener { onSuccess.invoke(it.toObject(TareasFacultad::class.java)) }
             .addOnFailureListener { result -> onError.invoke(result.cause) }
     }
 
-    fun addTareasFacultad(
+    fun addTareaFacultad(
         userId: String,
         materia: String,
         description: String,
@@ -195,14 +165,14 @@ class StorageRepository() {
         }
     }
 
-    fun updateTareasFacultad(
+    fun updateTareaFacultad(
         materia: String,
         description: String,
         fecha: String,
         dia: String,
         hora: String,
         color: Int,
-        tareasFacultadId: String,
+        tareaId: String,
         onResult: (Boolean) -> Unit
     ) {
         val updateData = hashMapOf<String, Any>(
@@ -214,12 +184,12 @@ class StorageRepository() {
             "hora" to hora
         )
 
-        tareasFacultadRef.document(tareasFacultadId).update(updateData).addOnCompleteListener {
+        tareasFacultadRef.document(tareaId).update(updateData).addOnCompleteListener {
             onResult(it.isSuccessful)
         }
     }
 
-    fun deleteTareasFacultad(tareaId: String, onComplete: (Boolean) -> Unit) {
+    fun deleteTareaFacultad(tareaId: String, onComplete: (Boolean) -> Unit) {
         tareasFacultadRef.document(tareaId).delete().addOnCompleteListener {
             onComplete.invoke(it.isSuccessful)
         }

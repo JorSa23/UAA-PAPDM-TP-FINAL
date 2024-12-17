@@ -1,5 +1,6 @@
 package com.example.apptareas
 
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.apptareas.detail.Examenes.ExamenViewModel
 import com.example.apptareas.detail.TareasFacultad.TareasFacultadViewModel // Importar el nuevo ViewModel
-import com.example.apptareas.TareasFacultadHome.HomeViewMode
+import com.example.apptareas.home.HomeViewMode
 import com.example.apptareas.login.LoginViewModel
 import com.example.apptareas.navigation.Navigation
 import com.example.apptareas.ui.theme.AppTareasTheme
@@ -36,8 +37,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Navigation(
                         loginViewModel = loginViewModel,
-                        //examenViewModel = examenViewModel,
-                        tareasFacultadViewModel = tareaFacultadViewModel,
+                        examenViewModel = examenViewModel,
+                        tareaFacultadViewModel = tareaFacultadViewModel, // Pasar el nuevo ViewModel
                         homeViewMode = homeViewMode
                     )
                 }
@@ -45,4 +46,5 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
