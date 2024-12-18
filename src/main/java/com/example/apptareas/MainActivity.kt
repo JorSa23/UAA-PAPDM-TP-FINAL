@@ -10,6 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.apptareas.ComprasHome.ComprasHomeViewModel
+import com.example.apptareas.detail.Compras.ComprasViewModel
 import com.example.apptareas.detail.Examenes.ExamenViewModel
 import com.example.apptareas.detail.TareasFacultad.TareasFacultadViewModel // Importar el nuevo ViewModel
 import com.example.apptareas.home.HomeViewMode
@@ -30,6 +32,8 @@ class MainActivity : ComponentActivity() {
             // Nuevo ViewModel para TareasFacultad
             val tareaFacultadViewModel = viewModel(modelClass = TareasFacultadViewModel::class.java)
 
+            val comprasViewModel = viewModel(modelClass = ComprasViewModel ::  class.java)
+            val comprasHomeViewModel = viewModel(modelClass = ComprasHomeViewModel ::  class.java)
             AppTareasTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -39,6 +43,8 @@ class MainActivity : ComponentActivity() {
                         loginViewModel = loginViewModel,
                         examenViewModel = examenViewModel,
                         tareaFacultadViewModel = tareaFacultadViewModel, // Pasar el nuevo ViewModel
+                        comprasViewModel = comprasViewModel,
+                        comprasHomeViewModel = comprasHomeViewModel,
                         homeViewMode = homeViewMode
                     )
                 }
